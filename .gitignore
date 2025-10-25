@@ -1,0 +1,4 @@
+# Ignore GitHub self-hosted runner binaries
+actions-runner/
+
+actions-runner
