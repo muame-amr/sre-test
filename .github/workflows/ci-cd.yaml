@@ -1,0 +1,47 @@
+name: CI/CD Pipeline (Kind)
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  CLUSTER_NAME: alif-cluster
+  REGISTRY: docker.io/${{ secrets.DOCKER_USERNAME }}
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted   # Local runner connected to kind
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Ensure kind cluster exists
+        run: |
+          if ! kind get clusters | grep -q $CLUSTER_NAME; then
+            kind create cluster --name $CLUSTER_NAME --config kind-config.yaml
+          fi
+
+      - name: Set kubectl context
+        run: |
+          kind get kubeconfig --name $CLUSTER_NAME > ~/.kube/config
+          kubectl cluster-info
+
+      - name: Build and load image for v1
+        run: |
+          cd v1
+          docker build -t webapp:v1 .
+          kind load docker-image webapp:v1 --name $CLUSTER_NAME
+
+      - name: Build and load image for v2
+        run: |
+          cd v2
+          docker build -t webapp:v2 .
+          kind load docker-image webapp:v2 --name $CLUSTER_NAME
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f deploy-config.yaml
+          kubectl apply -f deploy-monitoring.yaml
+

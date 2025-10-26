@@ -98,7 +98,7 @@ spec:
   ports:
   - port: 3000
     targetPort: 3000
-    nodePort: 30000
+    nodePort: 30005
 ---
 # Loki (logs)
 apiVersion: apps/v1
