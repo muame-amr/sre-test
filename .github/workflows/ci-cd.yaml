@@ -17,6 +17,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Print directory contents
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Contents:"
+          ls -al
+
+
       - name: Ensure kind cluster exists
         run: |
           if ! kind get clusters | grep -q $CLUSTER_NAME; then
@@ -30,9 +37,7 @@ jobs:
 
       - name: Build and load image for v1
         run: |
-          pwd
-          ls -la
-          cd v1
+          cd /home/alif/'Alif Project'/sre-task/v1
           IMAGE_TAG=webapp:v1-${GITHUB_SHA::7}
           docker build -t $IMAGE_TAG .
           kind load docker-image $IMAGE_TAG --name $CLUSTER_NAME
