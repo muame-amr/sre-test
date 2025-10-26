@@ -30,6 +30,8 @@ jobs:
 
       - name: Build and load image for v1
         run: |
+          pwd
+          ls -la
           cd v1
           IMAGE_TAG=webapp:v1-${GITHUB_SHA::7}
           docker build -t $IMAGE_TAG .
