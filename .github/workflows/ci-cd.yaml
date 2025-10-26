@@ -2,7 +2,7 @@ name: CI/CD Pipeline (Kind)
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   workflow_dispatch:
 
 env:
@@ -46,5 +46,4 @@ jobs:
         run: |
           kubectl apply -f deploy-config.yaml
           kubectl apply -f deploy-monitoring.yaml
-          kubectl rollout restart deployment --all
-
+          kubectl get deployment -o name | xargs kubectl rollout restart
