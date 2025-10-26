@@ -21,7 +21,7 @@ jobs:
         run: |
           if ! kind get clusters | grep -q $CLUSTER_NAME; then
             kind create cluster --name $CLUSTER_NAME --config kind-config.yaml
-          fi
+          fii
 
       - name: Set kubectl context
         run: |
@@ -31,8 +31,10 @@ jobs:
       - name: Build and load image for v1
         run: |
           cd v1
-          docker build -t webapp:v1 .
-          kind load docker-image webapp:v1 --name $CLUSTER_NAME
+          IMAGE_TAG=webapp:v1-${GITHUB_SHA::7}
+          docker build -t $IMAGE_TAG .
+          kind load docker-image $IMAGE_TAG --name $CLUSTER_NAME
+          sed -i "s|image: webapp:v1.*|image: $IMAGE_TAG|" ../deploy-config.yaml
 
       - name: Build and load image for v2
         run: |
@@ -44,4 +46,5 @@ jobs:
         run: |
           kubectl apply -f deploy-config.yaml
           kubectl apply -f deploy-monitoring.yaml
+          kubectl rollout restart deployment --all
 
