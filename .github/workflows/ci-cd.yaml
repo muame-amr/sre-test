@@ -7,7 +7,6 @@ on:
 
 env:
   CLUSTER_NAME: alif-cluster
-  REGISTRY: docker.io/${{ secrets.DOCKER_USERNAME }}
 
 jobs:
   build-and-deploy:
